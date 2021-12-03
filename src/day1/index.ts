@@ -12,14 +12,14 @@ export function threeMeasurementCounter(depths: number[]): number {
   const initialWindow = firstDepth + secondDepth + thirdDepth;
 
   return depths.reduce(
-    (acc, currentDepth, currentIndex) => {
+    ({ previousWindow, count }, currentDepth, currentIndex) => {
       const currentWindow =
         currentDepth + depths[currentIndex + 1] + depths[currentIndex + 2];
-      if (acc.previousWindow < currentWindow) {
-        acc.count += 1;
+      if (previousWindow < currentWindow) {
+        count += 1;
       }
-      acc.previousWindow = currentWindow;
-      return acc;
+
+      return { previousWindow: currentWindow, count };
     },
     { previousWindow: initialWindow, count: 0 }
   ).count;
