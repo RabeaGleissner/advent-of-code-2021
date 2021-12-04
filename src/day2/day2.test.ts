@@ -1,4 +1,4 @@
-import { Commands, findPosition } from "./day2";
+import { Commands, findPosition, findPositionWithAim } from "./day2";
 import puzzleInput from "./day2input";
 
 const exampleInput: Commands = [
@@ -15,7 +15,17 @@ describe("positioning", () => {
     expect(findPosition(exampleInput)).toBe(150);
   });
 
-  it("the result", () => {
+  it("the solution", () => {
     expect(findPosition(puzzleInput)).toBe(1990000);
+  });
+});
+
+describe("positioning with aim", () => {
+  it("returns position taking into account the aim", () => {
+    expect(findPositionWithAim(exampleInput)).toBe(900);
+  });
+
+  it("the solution", () => {
+    expect(findPositionWithAim(puzzleInput)).toBe(1975421260);
   });
 });
