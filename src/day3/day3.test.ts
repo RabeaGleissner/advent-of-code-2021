@@ -1,4 +1,4 @@
-import { calculatePowerConsumption } from "./day3";
+import { calculateLifeSupportRating, calculatePowerConsumption } from "./day3";
 import actualData from "./day3input";
 
 const exampleInput: string[] = [
@@ -23,5 +23,15 @@ describe("Power consumption", () => {
 
   it("the solution", () => {
     expect(calculatePowerConsumption(actualData)).toBe(3923414);
+  });
+});
+
+describe("Life support rating", () => {
+  it("calculates the life support rating", () => {
+    expect(calculateLifeSupportRating(exampleInput)).toBe(230);
+  });
+
+  it("the solution", () => {
+    expect(calculateLifeSupportRating(actualData)).toBe(5852595);
   });
 });
