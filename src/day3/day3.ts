@@ -1,5 +1,6 @@
 const OXYGEN_DEFAULT = 1;
 const CO2_DEFAULT = 0;
+
 interface Ratings {
   gamma: string;
   epsilon: string;
@@ -8,47 +9,46 @@ interface Ratings {
 export function calculatePowerConsumption(
   diagnosticReportBinaryNumbers: string[]
 ): number {
-  const { gamma, epsilon } = findGammaAndEpsilonRates(
+  const reportRows = transformInitialInputTo2DArray(
     diagnosticReportBinaryNumbers
   );
+  const { gamma, epsilon } = findGammaAndEpsilonRates(reportRows);
   return parseInt(gamma, 2) * parseInt(epsilon, 2);
 }
 
 export function calculateLifeSupportRating(
   diagnosticReportBinaryNumbers: string[]
 ): number {
-  // const { gamma: mostCommonBinary, epsilon: leastCommonBinary } =
-  // findGammaAndEpsilonRates(diagnosticReportBinaryNumbers);
-  const reportRows = diagnosticReportBinaryNumbers.map((line) =>
-    line.split("").map((digit) => parseInt(digit, 10))
+  const reportRows = transformInitialInputTo2DArray(
+    diagnosticReportBinaryNumbers
   );
-  const reportColumns = transposeReport(diagnosticReportBinaryNumbers);
+  const reportColumns = transpose(reportRows);
 
-  let updatingRowsForOxygen = reportRows;
+  let rowsToKeepForOxygen = reportRows;
   for (let i = 0; i < reportColumns.length; i++) {
     const { zerosCount, onesCount } = countOnesAndZerosAtPosition(
       i,
-      transposeReportWithNumbers(updatingRowsForOxygen)
+      transpose(rowsToKeepForOxygen)
     );
 
-    const mostCommonAtCurrentPosition = getMostCommonDigitForOxygen(
+    const mostCommonAtCurrentPosition = getDigitToKeepForOxygen(
       zerosCount,
       onesCount
     );
 
-    updatingRowsForOxygen = updatingRowsForOxygen.filter(
+    rowsToKeepForOxygen = rowsToKeepForOxygen.filter(
       (column) => column[i] === mostCommonAtCurrentPosition
     );
   }
 
-  let updatingRowsForCo2 = reportRows;
+  let rowsToKeepForCo2 = reportRows;
   for (let i = 0; i < reportColumns.length; i++) {
-    if (updatingRowsForCo2.length === 1) {
+    if (rowsToKeepForCo2.length === 1) {
       break;
     }
     const { zerosCount, onesCount } = countOnesAndZerosAtPosition(
       i,
-      transposeReportWithNumbers(updatingRowsForCo2)
+      transpose(rowsToKeepForCo2)
     );
 
     const leastCommonAtCurrentPosition = getDigitToKeepForCo2(
@@ -56,31 +56,33 @@ export function calculateLifeSupportRating(
       onesCount
     );
 
-    updatingRowsForCo2 = updatingRowsForCo2.filter(
+    rowsToKeepForCo2 = rowsToKeepForCo2.filter(
       (column) => column[i] === leastCommonAtCurrentPosition
     );
   }
 
-  const oxygenRatingBinary = updatingRowsForOxygen[0].join("");
-  const co2RatingBinary = updatingRowsForCo2[0].join("");
+  const oxygenRatingBinary = rowsToKeepForOxygen[0].join("");
+  const co2RatingBinary = rowsToKeepForCo2[0].join("");
 
   return parseInt(oxygenRatingBinary, 2) * parseInt(co2RatingBinary, 2);
 }
 
+const transformInitialInputTo2DArray = (report: string[]): number[][] => {
+  return report.map((line) =>
+    line.split("").map((digit) => parseInt(digit, 10))
+  );
+};
+
 const countOnesAndZerosAtPosition = (
   position: number,
-  transposedReport: number[][]
-) => {
-  const zerosCount = transposedReport[position].filter(
-    (digit) => digit === 0
-  ).length;
-  const onesCount = transposedReport[position].filter(
-    (digit) => digit === 1
-  ).length;
+  columns: number[][]
+): { onesCount: number; zerosCount: number } => {
+  const zerosCount = columns[position].filter((digit) => digit === 0).length;
+  const onesCount = columns[position].filter((digit) => digit === 1).length;
   return { zerosCount, onesCount };
 };
 
-const getMostCommonDigitForOxygen = (zerosCount: number, onesCount: number) => {
+const getDigitToKeepForOxygen = (zerosCount: number, onesCount: number) => {
   if (zerosCount === onesCount) {
     return OXYGEN_DEFAULT;
   } else {
@@ -97,9 +99,9 @@ const getDigitToKeepForCo2 = (zerosCount: number, onesCount: number) => {
 };
 
 const findGammaAndEpsilonRates = (
-  diagnosticReportBinaryNumbers: string[]
+  diagnosticReportBinaryNumbers: number[][]
 ): Ratings => {
-  const gammaRateArray = transposeReport(diagnosticReportBinaryNumbers).map(
+  const gammaRateArray = transpose(diagnosticReportBinaryNumbers).map(
     (column) => {
       const zerosCount = column.filter((digit) => digit === 0).length;
       const onesCount = column.filter((digit) => digit === 1).length;
@@ -115,30 +117,16 @@ const findGammaAndEpsilonRates = (
   return { gamma, epsilon };
 };
 
-const transposeReportWithNumbers = (report: number[][]): number[][] => {
-  const transposedReport: number[][] = [];
-  report[0].forEach((digit) => {
-    transposedReport.push([]);
+const transpose = (arrayWithRows: number[][]): number[][] => {
+  const arrayWithEmptyColumns: number[][] = [];
+  arrayWithRows[0].forEach((digit) => {
+    arrayWithEmptyColumns.push([]);
   });
 
-  return report.reduce((acc, binaryNumber) => {
+  return arrayWithRows.reduce((acc, binaryNumber) => {
     binaryNumber.forEach((digit, index) => {
       acc[index].push(+digit);
     });
     return acc;
-  }, transposedReport);
-};
-
-const transposeReport = (report: string[]): number[][] => {
-  const transposedReport: number[][] = [];
-  report[0].split("").forEach((digit) => {
-    transposedReport.push([]);
-  });
-
-  return report.reduce((acc, binaryNumber) => {
-    binaryNumber.split("").forEach((digit, index) => {
-      acc[index].push(+digit);
-    });
-    return acc;
-  }, transposedReport);
+  }, arrayWithEmptyColumns);
 };
