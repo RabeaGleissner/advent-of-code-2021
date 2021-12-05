@@ -2,8 +2,10 @@ import {
   gameStateForWholeBoard,
   gameStateForOneDirection,
   transformInputTo2DArray,
-  findWinningBoardGameState,
-  calculateWinningScore,
+  findFirstWinningBoardGameState,
+  calculateScoreForFirstWinningBoard,
+  findLastWinningBoardGameState,
+  calculateScoreForLastWinningBoard,
 } from "./day4";
 
 import { boards, draws } from "./day4input";
@@ -65,7 +67,7 @@ describe("calculate bingo score", () => {
       transformInputTo2DArray(board)
     );
     expect(
-      findWinningBoardGameState(exampleDraws, transformedInput)
+      findFirstWinningBoardGameState(exampleDraws, transformedInput)
     ).toStrictEqual({
       winningDraw: 24,
       unmarkedPositions: [10, 16, 15, 19, 18, 8, 26, 20, 22, 13, 6, 12, 3],
@@ -77,13 +79,48 @@ describe("calculate bingo score", () => {
     const transformedInput = exampleBoards.map((board) =>
       transformInputTo2DArray(board)
     );
-    expect(calculateWinningScore(exampleDraws, transformedInput)).toBe(4512);
+    expect(
+      calculateScoreForFirstWinningBoard(exampleDraws, transformedInput)
+    ).toBe(4512);
   });
 
-  it("the solution", () => {
+  it("the solution for part 1", () => {
     const transformedInput = boards.map((board) =>
       transformInputTo2DArray(board)
     );
-    expect(calculateWinningScore(draws, transformedInput)).toBe(2496);
+    expect(calculateScoreForFirstWinningBoard(draws, transformedInput)).toBe(
+      2496
+    );
+  });
+
+  it("get state for board that wins last", () => {
+    const transformedInput = exampleBoards.map((board) =>
+      transformInputTo2DArray(board)
+    );
+    expect(
+      findLastWinningBoardGameState(exampleDraws, transformedInput)
+    ).toStrictEqual({
+      winningDraw: 13,
+      unmarkedPositions: [3, 19, 20, 15, 18, 8, 25, 12, 22, 6],
+      winningDrawIndex: 14,
+    });
+  });
+
+  it("calculates the last winning score", () => {
+    const transformedInput = exampleBoards.map((board) =>
+      transformInputTo2DArray(board)
+    );
+    expect(
+      calculateScoreForLastWinningBoard(exampleDraws, transformedInput)
+    ).toBe(1924);
+  });
+
+  it("the solution for part 2", () => {
+    const transformedInput = boards.map((board) =>
+      transformInputTo2DArray(board)
+    );
+    expect(calculateScoreForLastWinningBoard(draws, transformedInput)).toBe(
+      25925
+    );
   });
 });

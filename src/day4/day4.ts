@@ -1,8 +1,8 @@
-export function calculateWinningScore(
+export function calculateScoreForLastWinningBoard(
   draws: number[],
   boards: number[][][]
 ): number {
-  const { winningDraw, unmarkedPositions } = findWinningBoardGameState(
+  const { winningDraw, unmarkedPositions } = findLastWinningBoardGameState(
     draws,
     boards
   );
@@ -10,7 +10,19 @@ export function calculateWinningScore(
   return sum(unmarkedPositions) * winningDraw;
 }
 
-export function findWinningBoardGameState(
+export function calculateScoreForFirstWinningBoard(
+  draws: number[],
+  boards: number[][][]
+): number {
+  const { winningDraw, unmarkedPositions } = findFirstWinningBoardGameState(
+    draws,
+    boards
+  );
+
+  return sum(unmarkedPositions) * winningDraw;
+}
+
+export function findFirstWinningBoardGameState(
   draws: number[],
   boards: number[][][]
 ): {
@@ -31,6 +43,28 @@ export function findWinningBoardGameState(
   }, allGameStates[0]);
 
   return winningBoardGameState;
+}
+
+export function findLastWinningBoardGameState(
+  draws: number[],
+  boards: number[][][]
+): {
+  winningDraw: number;
+  unmarkedPositions: number[];
+  winningDrawIndex: number;
+} {
+  const allGameStates = boards.map((board) =>
+    gameStateForWholeBoard(draws, board)
+  );
+  const lastWinningBoardGameState = allGameStates.reduce((acc, gameState) => {
+    if (gameState.winningDrawIndex > acc.winningDrawIndex) {
+      return gameState;
+    } else {
+      return acc;
+    }
+  }, allGameStates[0]);
+
+  return lastWinningBoardGameState;
 }
 
 export function gameStateForWholeBoard(
