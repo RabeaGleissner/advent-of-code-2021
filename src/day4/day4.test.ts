@@ -1,5 +1,5 @@
 import {
-  gameStateForWholeBoard,
+  gameStateForBoard,
   gameStateForOneDirection,
   transformInputTo2DArray,
   findFirstWinningBoardGameState,
@@ -53,9 +53,7 @@ describe("calculate bingo score", () => {
 
   it("gets unmarked positions and winning draw for the whole board", () => {
     const transformedInput = transformInputTo2DArray(exampleBoard);
-    expect(
-      gameStateForWholeBoard(exampleDraws, transformedInput)
-    ).toStrictEqual({
+    expect(gameStateForBoard(exampleDraws, transformedInput)).toStrictEqual({
       winningDraw: 24,
       unmarkedPositions: [10, 16, 15, 19, 18, 8, 26, 20, 22, 13, 6, 12, 3],
       winningDrawIndex: 11,

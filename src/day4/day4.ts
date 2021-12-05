@@ -1,3 +1,9 @@
+interface GameState {
+  winningDraw: number;
+  unmarkedPositions: number[];
+  winningDrawIndex: number;
+}
+
 export function calculateScoreForLastWinningBoard(
   draws: number[],
   boards: number[][][]
@@ -25,62 +31,44 @@ export function calculateScoreForFirstWinningBoard(
 export function findFirstWinningBoardGameState(
   draws: number[],
   boards: number[][][]
-): {
-  winningDraw: number;
-  unmarkedPositions: number[];
-  winningDrawIndex: number;
-} {
-  const allGameStates = boards.map((board) =>
-    gameStateForWholeBoard(draws, board)
-  );
-
-  const winningBoardGameState = allGameStates.reduce((acc, gameState) => {
+): GameState {
+  const allGameStates = allGameStatesForManyBoards(draws, boards);
+  return allGameStates.reduce((acc, gameState) => {
     if (gameState.winningDrawIndex < acc.winningDrawIndex) {
       return gameState;
     } else {
       return acc;
     }
   }, allGameStates[0]);
-
-  return winningBoardGameState;
 }
 
 export function findLastWinningBoardGameState(
   draws: number[],
   boards: number[][][]
-): {
-  winningDraw: number;
-  unmarkedPositions: number[];
-  winningDrawIndex: number;
-} {
-  const allGameStates = boards.map((board) =>
-    gameStateForWholeBoard(draws, board)
-  );
-  const lastWinningBoardGameState = allGameStates.reduce((acc, gameState) => {
+): GameState {
+  const allGameStates = allGameStatesForManyBoards(draws, boards);
+  return allGameStates.reduce((acc, gameState) => {
     if (gameState.winningDrawIndex > acc.winningDrawIndex) {
       return gameState;
     } else {
       return acc;
     }
   }, allGameStates[0]);
-
-  return lastWinningBoardGameState;
 }
 
-export function gameStateForWholeBoard(
+const allGameStatesForManyBoards = (
+  draws: number[],
+  boards: number[][][]
+): GameState[] => boards.map((board) => gameStateForBoard(draws, board));
+
+export function gameStateForBoard(
   draws: number[],
   boardRows: number[][]
-): {
-  winningDraw: number;
-  unmarkedPositions: number[];
-  winningDrawIndex: number;
-} {
-  const boardColumns = transpose(boardRows);
-
+): GameState {
   const horizontalState = gameStateForOneDirection(draws, boardRows);
-
   const drawsUpToWinningDraw = draws.slice(0, horizontalState.winningDrawIndex);
 
+  const boardColumns = transpose(boardRows);
   const verticalState = gameStateForOneDirection(
     drawsUpToWinningDraw,
     boardColumns
@@ -99,11 +87,7 @@ const sum = (positions: number[]) =>
 export function gameStateForOneDirection(
   draws: number[],
   board: number[][]
-): {
-  winningDraw: number;
-  unmarkedPositions: number[];
-  winningDrawIndex: number;
-} {
+): GameState {
   const DEFAULT_WINNING_DRAW = 1000000;
   let unmarkedLines = board;
   let winningDraw: number = DEFAULT_WINNING_DRAW;
