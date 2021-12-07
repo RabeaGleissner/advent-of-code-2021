@@ -14,4 +14,4 @@ Solutions to [https://adventofcode.com/](https://adventofcode.com/) in TypeScrip
 
 ## Create empty files for another day
 
-`npm run create:day`
+`npm run create:day <DAY NUMBER>`
