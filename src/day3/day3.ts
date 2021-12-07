@@ -1,3 +1,5 @@
+import { transpose } from "../transformer";
+
 const OXYGEN_DEFAULT = 1;
 const CO2_DEFAULT = 0;
 
@@ -115,18 +117,4 @@ const findGammaAndEpsilonRates = (
   const epsilon = epsilonRateArray.join("");
 
   return { gamma, epsilon };
-};
-
-const transpose = (arrayWithRows: number[][]): number[][] => {
-  const arrayWithEmptyColumns: number[][] = [];
-  arrayWithRows[0].forEach((digit) => {
-    arrayWithEmptyColumns.push([]);
-  });
-
-  return arrayWithRows.reduce((acc, binaryNumber) => {
-    binaryNumber.forEach((digit, index) => {
-      acc[index].push(+digit);
-    });
-    return acc;
-  }, arrayWithEmptyColumns);
 };
