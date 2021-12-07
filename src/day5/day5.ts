@@ -16,9 +16,15 @@ export function convertInputToCoordinates(
   });
 }
 
-export function findOverlap(input: PuzzleInput[]) {
+export function findOverlap(
+  input: PuzzleInput[],
+  diagonals: { includeDiagonals: boolean }
+) {
   const startAndEndCoordinates = convertInputToCoordinates(input);
-  const lines = createLinesFromStartAndEndCoordinates(startAndEndCoordinates);
+  const lines = createLinesFromStartAndEndCoordinates(
+    startAndEndCoordinates,
+    diagonals
+  );
 
   const allCoordinatesWithVents: Coordinate[] = lines.flat();
   const coordinatesAndTheirOccurance: { [key: string]: number } = {};

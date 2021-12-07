@@ -70,29 +70,40 @@ describe("Hydrothermal vent overlap calculation", () => {
   });
 
   it("finds coordinates where lines overlap", () => {
-    expect(findOverlap(exampleInput)).toBe(5);
+    expect(findOverlap(exampleInput, { includeDiagonals: false })).toBe(5);
   });
 
   it("finds coordinates where lines overlap only once", () => {
     expect(
-      findOverlap([
+      findOverlap(
         [
-          [9, 4],
-          [3, 4],
+          [
+            [9, 4],
+            [3, 4],
+          ],
+          [
+            [4, 4],
+            [3, 4],
+          ],
+          [
+            [4, 4],
+            [4, 4],
+          ],
         ],
-        [
-          [4, 4],
-          [3, 4],
-        ],
-        [
-          [4, 4],
-          [4, 4],
-        ],
-      ])
+        { includeDiagonals: false }
+      )
     ).toBe(2);
   });
 
-  it("the solution", () => {
-    expect(findOverlap(actualPuzzleInput)).toBe(5);
+  it("the solution for part 1 (without diagonals)", () => {
+    expect(findOverlap(actualPuzzleInput, { includeDiagonals: false })).toBe(
+      5690
+    );
+  });
+
+  it("the solution for part 2 (with diagonals)", () => {
+    expect(findOverlap(actualPuzzleInput, { includeDiagonals: true })).toBe(
+      17741
+    );
   });
 });
